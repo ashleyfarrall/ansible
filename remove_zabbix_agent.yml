@@ -1,0 +1,27 @@
+---
+  - name: remove zabbix
+    hosts: all
+    become: yes
+
+    tasks:
+    - name: remove zabbix agent
+      apt:
+       name: zabbix-agent
+       state: absent
+
+    - name: remove systemctl symlink
+      command:
+       cmd: rm /etc/systemd/system/zabbix-agent.service
+
+    - name: remove systemctl symlink
+      command:
+       cmd: rm /usr/lib/systemd/system/zabbix-agent.service
+
+    - name: remove systemctl symlink
+      command:
+       cmd: rm /etc/init.d/zabbix-agent
+
+    - name: reload systemctl
+      systemd:
+       daemon_reload: yes
+
