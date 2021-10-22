@@ -1,0 +1,6 @@
+# platform roles
+  - name: Install zabbix for debian
+    import_tasks: debian.yml
+
+#- name: Remove zabbix 
+#     import_tasks: remove_zabbix_agent.yml

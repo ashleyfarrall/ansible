@@ -1,0 +1,4 @@
+# platform roles
+  - name: Install vulners for debian
+    import_tasks: debian.yml
+

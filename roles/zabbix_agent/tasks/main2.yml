@@ -1,0 +1,3 @@
+# platform roles
+  - name: Install zabbix for debian
+    import_tasks: debian.yml

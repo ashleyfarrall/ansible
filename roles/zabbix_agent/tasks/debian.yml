@@ -1,0 +1,82 @@
+---
+- name: fetch python apt
+  get_url:
+    url: https://snapshot.debian.org/archive/debian-security/20210625T083341Z/pool/updates/main/p/python-apt/python-apt_1.8.4.3_amd64.deb
+    dest: /tmp/python_apt.deb
+  become: yes
+
+- name: Install python_apt deb package
+  apt:
+    deb: /tmp/python_apt.deb
+  become: yes
+  become_flags: "-"
+
+- name: Check if Zabbix agent is already installed
+  package_facts:
+    manager: auto
+ 
+- name: Zabbix agent result
+  debug: 
+    msg: Zabbix agent found
+  when: "'zabbix-agent' in ansible_facts.packages"
+  
+- name: Fetch zabbix deb package
+  get_url:
+    url: https://repo.zabbix.com/zabbix/5.0/debian/pool/main/z/zabbix-release/zabbix-release_5.0-1+buster_all.deb
+    dest: /tmp/zabbix5-repo.deb
+  become: yes
+
+- name: Install zabbix deb package
+  apt:
+    deb: /tmp/zabbix5-repo.deb
+  become: yes
+  become_flags: "-"
+
+- name: Install zabbix agent
+  apt:
+    update_cache: yes
+    name: zabbix-agent
+  become: yes
+
+- name: Enable the service
+  systemd:
+   name: zabbix-agent
+   enabled: yes
+  become: yes
+
+- name: Check if zabbix_agend.conf exists
+  stat:
+   path: /etc/zabbix/zabbix_agentd.conf
+  register: z
+
+- name: zabbix-agent.conf result
+  debug:
+    msg: "File exists..."
+  when: z.stat.exists
+
+- name: Template a file to /etc/zabbix/zabbix_agentd.conf
+  template:
+   src: templates/zabbix_agentd.conf.j2
+   dest: /etc/zabbix/zabbix_agentd.conf
+   #  when: z.stat.exists == False 
+  become: yes
+
+- name: Restart the service
+  systemd:
+   name: zabbix-agent
+   state: restarted
+  become: yes
+
+- name: Add Zabbix user to adm group for logs
+  user:
+   name: zabbix
+   groups: zabbix,adm
+   append: yes    
+  become: yes  
+
+- name: Restart the service
+  systemd:
+   name: zabbix-agent
+   state: restarted
+  become: yes
+...

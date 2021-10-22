@@ -1,0 +1,104 @@
+---
+- name: stop zabbix agent
+  systemd:
+   name: zabbix-agent
+   state: stopped
+  become: yes 
+
+- name: remove zabbix agent
+  apt:
+   name: zabbix-agent
+   state: absent
+  become: yes
+  
+- name: Check if /etc/systemd/system/zabbix-agent.service exists
+  stat:
+   path: /etc/systemd/system/zabbix-agent.service
+  register: z
+  
+- name: etc/systemd/system/zabbix-agent.service result
+  debug:
+    msg: "File exists..."
+  when: z.stat.exists
+
+- name: remove systemctl symlink
+  command: 
+   cmd: rm /etc/systemd/system/zabbix-agent.service
+  when: z.stat.exists == True
+  become: yes
+
+- name: Check if /etc/systemd/system/zabbix-agent.service exists
+  stat:
+   path: /etc/systemd/system/zabbix-agent.service
+  register: y
+  
+- name: /etc/systemd/system/zabbix-agent.service result
+  debug:
+    msg: "File exists..."
+  when: y.stat.exists
+  
+- name: remove systemctl symlink
+  command: 
+   cmd: rm /usr/lib/systemd/system/zabbix-agent.service
+  when: y.stat.exists == True
+  become: yes
+
+- name: Check if /etc/init.d/zabbix-agent exists
+  stat:
+   path: /etc/init.d/zabbix-agent
+  register: x
+  
+- name: /etc/init.d/zabbix-agent result
+  debug:
+    msg: "File exists..."
+  when: x.stat.exists
+
+- name: remove systemctl symlink
+  command: 
+   cmd: rm /etc/init.d/zabbix-agent
+  when: x.stat.exists == True
+  become: yes
+
+- name: Check if /etc/apt/sources.list.d/zabbix-agent.list exists
+  stat:
+   path: /etc/apt/sources.list.d/zabbix-agent.list
+  register: w
+  
+- name: /etc/apt/sources.list.d/zabbix-agent.list result
+  debug:
+    msg: "File exists..."
+  when: w.stat.exists
+
+- name: remove zabbix agent repo 
+  command: 
+   cmd: rm /etc/apt/sources.list.d/zabbix-agent.list
+  when: w.stat.exists == True
+  become: yes
+
+- name: Check if /etc/apt/sources.list.d/repo_zabbix_com_zabbix_5_2_debian.list exists
+  stat:
+   path: /etc/apt/sources.list.d/repo_zabbix_com_zabbix_5_2_debian.list
+  register: v
+
+- name: /etc/apt/sources.list.d/repo_zabbix_com_zabbix_5_2_debian.list
+  debug:
+    msg: "File exists..."
+  when: v.stat.exists
+
+- name: remove zabbix agent repo
+  command:
+   cmd: rm /etc/apt/sources.list.d/repo_zabbix_com_zabbix_5_2_debian.list
+  when: v.stat.exists == True
+  become: yes
+  
+- name: update apt cache
+  apt: 
+   update_cache: yes
+  become: yes 
+
+- name: reload systemctl
+  systemd:       
+   daemon_reload: yes
+  become: yes 
+
+

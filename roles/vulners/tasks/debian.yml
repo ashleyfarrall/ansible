@@ -1,0 +1,18 @@
+---
+  - name: Fetch vulners deb package
+    get_url: 
+      url: https://repo.vulners.com/debian/vulners-repo.deb
+      dest: /tmp/vulners-repo.deb
+    become: yes
+  
+  - name: Install vulners deb package
+    apt: 
+      deb: /tmp/vulners-repo.deb
+    become: yes
+    become_flags: "-"
+
+  - name: Install threat control host
+    apt:
+      update_cache: yes
+      name: zabbix-threat-control-host
+    become: yes     
