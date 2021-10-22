@@ -1,0 +1,16 @@
+---
+- name: comment out acquire
+  hosts: 
+  become: yes
+  tasks:
+    - name: comment aquire
+      shell: sed -e '/Acquire/ s/^#*/#/' -i /etc/apt/apt.conf
+      #remove comment
+      #shell: sed -e 's/^#\(.*\)/\1/' -i /etc/apt/apt.conf
+      become: yes
+      become_method: su
+      become_flags: '-'
+    - name: update cache
+      apt:
+        update_cache: yes
+      become: yes
