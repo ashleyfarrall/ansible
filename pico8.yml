@@ -1,0 +1,17 @@
+- name: start pico8
+  hosts: c204
+  become: yes
+  become_flags: "-"
+
+
+  tasks:
+    - name: Creates an entry like "@reboot /opt/pico-8-0.2.0/pico8"
+      ansible.builtin.cron:
+        name: "start pico on boot"
+        special_time: reboot
+      job: "/opt/pico-8-0.2.0/pico8"
+
+ #   - name: 'Remove start pico on boot'
+ #     ansible.builtin.cron:
+ #       name: "start pico on boot"
+ #       state: absent
