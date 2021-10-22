@@ -1,0 +1,3 @@
+ - hosts: c203
+   roles:
+     - role: vulners
