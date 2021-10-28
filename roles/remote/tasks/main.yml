@@ -1,0 +1,3 @@
+  - name: Install notify send and auto idle logout
+    import_tasks: debian.yml
+

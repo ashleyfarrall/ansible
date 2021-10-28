@@ -1,0 +1,64 @@
+---
+  - name: Install libnotify-bin
+    apt:
+      update_cache: yes
+      name: libnotify-bin
+    become: yes
+
+  - name: Check if sendnotify exists
+    stat:
+     path: /root/cron-tasks/sendnotify-to-user-reboot-10-minutes
+    register: z
+    become: yes
+
+  - name: sendnotify result
+    debug:
+     msg: "File exists..."
+    when: z.stat.exists
+
+  - name: Template a file to cron-tasks/
+    template:
+     src: templates/sendnotify-to-user-reboot-10-minutes
+     dest: /root/cron-tasks/sendnotify-to-user-reboot-10-minutes
+    # when: z.stat.exists == False
+    become: yes
+
+  - name: set perms on sendnotify
+    file:
+     path: /root/cron-tasks/sendnotify-to-user-reboot-10-minutes
+     state: file
+     mode: '0755'
+    become: yes
+
+  - name: Check if autologout.sh exists
+    stat:
+     path: /etc/profile.d/autologout.sh
+    register: y
+
+  - name: autologout.sh result
+    debug:
+     msg: "File exists..."
+    when: y.stat.exists
+
+  - name: Template a file to /etc/profile.d/
+    template:
+     src: templates/autologout.sh
+     dest: /etc/profile.d/autologout.sh
+    # when: y.stat.exists == False
+    become: yes
+
+  - name: Cron entry for sendnotify"
+    cron:
+      name: "sendnotify"
+      hour: "3"
+      minute: "50"
+      job: "cron-tasks/sendnotify-to-user-reboot-10-minutes"
+    become: yes
+  
+  - name: Cron entry for reboot"
+    cron:
+      name: "reboot"
+      hour: "4"
+      minute: "0"
+      job: "/sbin/shutdown -r +1"
+    become: yes
