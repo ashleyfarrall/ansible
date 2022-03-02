@@ -1,0 +1,4 @@
+# platform roles
+  - name: Install dhcprelease for debian
+    import_tasks: debian.yml
+

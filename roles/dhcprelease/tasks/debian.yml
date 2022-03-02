@@ -1,0 +1,21 @@
+---
+  - name: Template a file to cron-tasks/
+    template:
+     src: templates/dhclient
+     dest: /root/cron-tasks/dhclient
+     # when: z.stat.exists == False
+    become: yes
+
+  - name: set perms on dhclient
+    file:
+     path: /root/cron-tasks/dhclient
+     state: file
+     mode: '0755'
+    become: yes
+
+  - name: Cron entry for dhclient"
+    cron:
+      name: "dhclient"
+      special_time: reboot
+      job: "cron-tasks/dhclient"
+    become: yes
