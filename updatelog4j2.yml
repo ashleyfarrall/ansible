@@ -1,0 +1,37 @@
+---
+- name: update liblog4j2-java
+  hosts: 
+  become: yes
+  tasks:
+    - name: comment aquire
+      shell: sed -e '/Acquire/ s/^#*/#/' -i /etc/apt/apt.conf
+      #remove comment
+      #shell: sed -e 's/^#\(.*\)/\1/' -i /etc/apt/apt.conf
+      become: yes
+      become_method: su
+      become_flags: '-'
+      #- name: update cache
+      #apt:
+      # update_cache: yes
+      #become: yes
+    - name: Add specified repository into sources list using specified filename
+      apt_repository:
+        repo: deb http://security.debian.org/debian-security buster/updates main contrib non-free
+        state: present
+        filename: deb-security
+        update_cache: no
+      become: yes
+    - name: update cache
+      apt:
+        update_cache: yes
+      become: yes
+    - name: install updated log4j2
+      apt:
+        name: liblog4j2-java
+        state: latest
+      become: yes
+    - name: install updated log4j2
+      apt:
+        name: liblog4j2-java-doc
+        state: latest
+      become: yes
